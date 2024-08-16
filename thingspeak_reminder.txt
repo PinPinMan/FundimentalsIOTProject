@@ -1,0 +1,26 @@
+% Enter your MATLAB Code below
+alert_body = 'This is your reminder!';
+alert_subject = 'Reminder to use your PeakPacer';
+alert_api_key = 'TAKreeL6RVWGTg/3dtb'; % Replace with your actual API key
+alert_url = "https://api.thingspeak.com/alerts/send";
+
+% Create JSON message
+jsonmessage = sprintf('{"subject": "%s", "body": "%s"}', alert_subject, alert_body);
+
+% Set options for web request
+options = weboptions("HeaderFields", {
+    'Thingspeak-Alerts-API-Key', alert_api_key;
+    'Content-Type', 'application/json'
+});
+
+% Send the request
+try
+    result = webwrite(alert_url, jsonmessage, options);
+    disp('Email sent successfully:');
+    disp(result);
+catch ME
+    fprintf('Error occurred: %s\n', ME.message);
+    if strcmp(ME.message, 'Too Many Requests')
+        fprintf('Rate limit exceeded. Please wait and try again.\n');
+    end
+end
